@@ -88,8 +88,8 @@ GOOGLE_API_KEY=your_gemini_api_key_here
 
 *   `main.py`: The core FastAPI backend handling safety analysis and AI brand matching.
 *   `static/`: The frontend files (HTML, CSS, JS).
-*   `GEMINI.md`: Project roadmap and implementation notes.
-*   `.env`: Secure storage for API keys (not included in version control).
+*   `README.md`: Project roadmap and implementation notes.
+*   `.env`: Secure storage for API keys.
 
 ---
 
