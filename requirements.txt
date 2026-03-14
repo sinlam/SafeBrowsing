@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+tldextract
+validators
+opencv-python
+numpy
+pyzbar
+playwright
+playwright-stealth
+pysafebrowsing
+python-whois
+google-genai
+Pillow
+python-dotenv
+qrcode
+python-multipart

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safe Web Helper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Language Switcher -->
+        <div class="language-switcher">
+            <button onclick="changeLanguage('en')" class="lang-btn active">English</button>
+            <button onclick="changeLanguage('zh')" class="lang-btn">中文</button>
+            <button onclick="changeLanguage('ms')" class="lang-btn">Melayu</button>
+            <button onclick="changeLanguage('ta')" class="lang-btn">தமிழ்</button>
+        </div>
+
+        <h1 data-i18n="app-title">🛡️ Safe Web Helper</h1>
+        <p class="intro" data-i18n="app-subtitle">Helping you check links and QR codes safely.</p>
+
+        <!-- Step 1: Landing Choice -->
+        <div id="landingPage" class="landing-container">
+            <h2 class="landing-title" data-i18n="landing-title">What would you like to do today?</h2>
+            <div class="wizard-grid">
+                <button class="wizard-card link-card" onclick="showSection('linkTool')">
+                    <span class="wizard-icon">🔗</span>
+                    <span class="wizard-text" data-i18n="wizard-link-text">I have a link from a message</span>
+                    <span class="wizard-subtext" data-i18n="wizard-link-subtext">SMS, WhatsApp, or Email</span>
+                </button>
+                <button class="wizard-card qr-card" onclick="showSection('qrTool')">
+                    <span class="wizard-icon">🔳</span>
+                    <span class="wizard-text" data-i18n="wizard-qr-text">I want to scan a QR code</span>
+                    <span class="wizard-subtext" data-i18n="wizard-qr-subtext">On a poster or flyer</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Link Tool -->
+        <section id="linkTool" class="tool-section link-tool hidden">
+            <button onclick="showSection('landingPage')" class="btn-back">⬅ <span data-i18n="btn-back">Go Back</span></button>
+            <div class="tool-header">
+                <span class="tool-icon">🔗</span>
+                <h2 data-i18n="link-tool-title">Check a Website Link</h2>
+            </div>
+            <p class="tool-desc" data-i18n="link-tool-desc">Use this if you have a web address from a text message, email, or WhatsApp.</p>
+            <div class="input-group">
+                <input type="text" id="urlInput" placeholder="Enter or paste the website link here..." data-i18n-placeholder="url-input-placeholder" aria-label="Website Link">
+                <button id="checkBtn" onclick="analyzeURL()" class="btn-primary" data-i18n="btn-check-link">Check This Link</button>
+            </div>
+            <div id="urlAnalysis" class="result-box hidden">
+                <div id="trustCard" class="trust-card hidden"></div>
+                <h3 data-i18n="analysis-result-title">Analysis Result:</h3>
+                <div id="urlParts" class="url-parts"></div>
+                
+                <!-- What should I do? section -->
+                <div id="whatToDo" class="action-box hidden">
+                    <h4 data-i18n="action-title">💡 What should I do?</h4>
+                    <ul id="actionList" class="action-list">
+                    </ul>
+                </div>
+
+                <p id="urlWarning" class="warning"></p>
+                <button onclick="togglePreview()" id="previewBtn" class="btn-secondary" data-i18n="btn-show-preview">Show Safe Preview</button>
+            </div>
+        </section>
+
+        <!-- Step 2: QR Tool -->
+        <section id="qrTool" class="tool-section qr-tool hidden">
+            <button onclick="showSection('landingPage')" class="btn-back">⬅ <span data-i18n="btn-back">Go Back</span></button>
+            <div class="tool-header">
+                <span class="tool-icon">🔳</span>
+                <h2 data-i18n="qr-tool-title">Check a QR Code</h2>
+            </div>
+            <p class="tool-desc" data-i18n="qr-tool-desc">Point your camera at a QR code or upload a photo of one.</p>
+
+            <div class="scanner-container">
+                <div id="reader" style="width: 100%; max-width: 600px; margin: 0 auto; border-radius: 10px; overflow: hidden;"></div>
+                <div class="scanner-controls">
+                    <button id="startScanBtn" onclick="startScanner()" class="btn-primary qr-btn" data-i18n="btn-start-scan">📷 Use Camera to Scan</button>
+                    <button id="stopScanBtn" onclick="stopScanner()" class="btn-danger hidden" data-i18n="btn-stop-scan">Stop Camera</button>
+                </div>
+            </div>
+
+            <div class="separator-small">
+                <span data-i18n="separator-or">OR UPLOAD A PHOTO</span>
+            </div>
+
+            <div class="input-group">
+                <input type="file" id="qrInput" accept="image/*" aria-label="Upload QR Code">
+                <button onclick="decodeQR()" class="btn-primary qr-btn" data-i18n="btn-check-photo">Check Uploaded Photo</button>
+            </div>
+            <div id="qrResult" class="result-box qr-result hidden">
+                <h3 data-i18n="qr-result-title">Link found in QR code:</h3>
+                <p id="qrUrl" class="big-text"></p>
+                <button onclick="useQrUrl()" class="btn-secondary" data-i18n="btn-check-qr-link">Check This Link Above</button>
+            </div>
+        </section>
+    </div>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="marked.min.js"></script>
+        <section id="previewSection" class="tool-section hidden">
+            <h2 data-i18n="preview-title">Safe Website Snapshot</h2>
+            <p class="disclaimer" data-i18n="preview-disclaimer">This is a safe picture of the website. You cannot click anything here for your safety.</p>
+            
+            <div id="aiAnalysisBox" class="result-box" style="border-color: var(--secondary-color); margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="margin: 0;" data-i18n="ai-box-title">🤖 AI Safety Assistant Says:</h3>
+                    <button id="readAloudBtn" onclick="toggleReadAloud()" class="btn-tts" title="Hear the Advice">
+                        🔊 <span data-i18n="btn-tts-hear">Hear the Advice</span>
+                    </button>
+                </div>
+                <div id="aiReport" class="big-text" style="font-family: inherit; font-size: 1.5rem; text-align: left;" data-i18n="ai-waiting">
+                    Waiting for AI to look at the site...
+                </div>
+            </div>
+
+            <div id="loading" class="hidden big-text" data-i18n="loading-text">Taking a safe picture... please wait...</div>
+            <div class="image-container">
+                <img id="safeSnapshot" src="" alt="Safe Website Snapshot" style="width: 100%; display: block; border-radius: 5px;">
+            </div>
+            <button onclick="hidePreview()" class="btn-danger" data-i18n="btn-close-snapshot">Close Snapshot</button>
+        </section>
+    </div>
+    <script src="marked.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
