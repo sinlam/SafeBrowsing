@@ -99,4 +99,4 @@ This tool is a helper to identify common web scams. It should be used as a suppl
 ---
 
 ## 📜 License
-[MIT License](LICENSE)
+[Apache License](LICENSE)
